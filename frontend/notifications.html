@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notifications - Nexus Esports</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+      <a class="navbar-brand" href="/index.html"><i class="fas fa-gamepad text-success me-1"></i> NEXUS<span>ESPORTS</span></a>
+      <button class="navbar-toggler navbar-dark" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto ms-lg-4">
+          <li class="nav-item"><a class="nav-link" href="/index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="/tournaments.html">Tournaments</a></li>
+          <li class="nav-item"><a class="nav-link" href="/matches.html">Matches</a></li>
+          <li class="nav-item"><a class="nav-link" href="/leaderboard.html">Leaderboard</a></li>
+        </ul>
+        <ul class="navbar-nav ms-auto" id="auth-nav"></ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container py-5" style="max-width: 800px;">
+    <!-- Pending Team Invitations Card -->
+    <div id="pending-invitations-card" class="card-glass mb-4 border-start border-4 border-warning d-none">
+      <h4 class="text-uppercase text-warning mb-3"><i class="fas fa-user-plus me-2"></i> Pending Team Invitations</h4>
+      <div id="invitations-list"></div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h1 class="text-uppercase text-light mb-1"><i class="fas fa-bell text-success me-2"></i> System Notifications</h1>
+        <p class="text-muted mb-0">Updates regarding your payments, match rooms, and invitations.</p>
+      </div>
+      <button class="btn btn-sm btn-outline-secondary" onclick="handleMarkAllRead()"><i class="fas fa-check-double me-1"></i> Mark All Read</button>
+    </div>
+
+    <div id="notifications-container">
+      <!-- Populated by notifications.js -->
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/notifications.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      loadNotifications();
+      // Load Team Invitations
+      try {
+        const data = await apiRequest('/teams/invitations', 'GET', null, true);
+        const card = document.getElementById('pending-invitations-card');
+        const list = document.getElementById('invitations-list');
+
+        if (data.invitations && data.invitations.length > 0) {
+          card.classList.remove('d-none');
+          list.innerHTML = data.invitations.map(inv => `
+            <div class="d-flex justify-content-between align-items-center p-3 rounded bg-dark border border-secondary mb-2">
+              <div>
+                <h6 class="text-light mb-0">Invited to join <strong>${inv.team.name}</strong></h6>
+                <small class="text-muted">Invited by ${inv.inviter ? inv.inviter.username : 'Captain'}</small>
+              </div>
+              <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-neon" onclick="respondInvite('${inv._id}', 'ACCEPT')"><i class="fas fa-check me-1"></i> ACCEPT</button>
+                <button class="btn btn-sm btn-outline-danger" onclick="respondInvite('${inv._id}', 'REJECT')"><i class="fas fa-times me-1"></i> REJECT</button>
+              </div>
+            </div>
+          `).join('');
+        }
+      } catch (err) {}
+    });
+
+    async function respondInvite(invId, action) {
+      try {
+        const res = await apiRequest(`/teams/invitations/${invId}/respond`, 'POST', { action });
+        showToast(res.message);
+        setTimeout(() => location.reload(), 1000);
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - Nexus Esports</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/auth.css">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+      <a class="navbar-brand" href="/index.html"><i class="fas fa-gamepad text-success me-1"></i> NEXUS<span>ESPORTS</span></a>
+    </div>
+  </nav>
+
+  <!-- Register Form -->
+  <div class="auth-container">
+    <div class="auth-card" style="max-width: 520px;">
+      <div class="auth-header">
+        <h2 class="text-uppercase"><i class="fas fa-user-plus text-success me-2"></i> Join Nexus Esports</h2>
+        <p>Create your gamer account to compete in tournaments</p>
+      </div>
+
+      <form onsubmit="handleRegister(event)">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Full Name</label>
+            <input type="text" id="name" class="form-control" placeholder="John Doe" required>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Username</label>
+            <input type="text" id="username" class="form-control" placeholder="john_warrior" required>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Email Address</label>
+            <input type="email" id="email" class="form-control" placeholder="john@example.com" required>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Phone Number</label>
+            <input type="tel" id="phone" class="form-control" placeholder="9876543210" required>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Password</label>
+            <input type="password" id="password" class="form-control" placeholder="••••••••" required minlength="6">
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Confirm Password</label>
+            <input type="password" id="confirmPassword" class="form-control" placeholder="••••••••" required minlength="6">
+          </div>
+        </div>
+
+        <button type="submit" class="btn-neon w-100 mt-3 justify-content-center">Create Gamer Account <i class="fas fa-check-circle ms-2"></i></button>
+      </form>
+
+      <div class="text-center mt-4 pt-3 border-top border-secondary">
+        <span class="text-muted fs-7">Already registered?</span>
+        <a href="/login.html" class="text-success fw-bold ms-1 text-decoration-none">Login Here</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+</body>
+</html>

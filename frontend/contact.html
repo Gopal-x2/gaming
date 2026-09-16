@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us - Nexus Esports</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+      <a class="navbar-brand" href="/index.html"><i class="fas fa-gamepad text-success me-1"></i> NEXUS<span>ESPORTS</span></a>
+      <button class="navbar-toggler navbar-dark" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto ms-lg-4">
+          <li class="nav-item"><a class="nav-link" href="/index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="/tournaments.html">Tournaments</a></li>
+          <li class="nav-item"><a class="nav-link" href="/matches.html">Matches</a></li>
+          <li class="nav-item"><a class="nav-link" href="/leaderboard.html">Leaderboard</a></li>
+        </ul>
+        <ul class="navbar-nav ms-auto" id="auth-nav"></ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container py-5" style="max-width: 850px;">
+    <div class="card-glass p-4 p-md-5">
+      <div class="text-center mb-5">
+        <span class="badge bg-dark border border-success text-success px-3 py-2 mb-3 text-uppercase fs-7">
+          <i class="fas fa-headset me-1"></i> Player Support
+        </span>
+        <h1 class="text-uppercase text-light">Contact & Support Center</h1>
+        <p class="text-muted">Have a question about a tournament, match room, or refund? We are here to help!</p>
+      </div>
+
+      <div class="row g-4 mb-5">
+        <div class="col-md-4 text-center">
+          <div class="p-4 rounded bg-dark border border-secondary h-100">
+            <i class="fas fa-envelope fa-2x text-success mb-3"></i>
+            <h5 class="text-light text-uppercase">Email Us</h5>
+            <small class="text-muted d-block mb-2">For general & support inquiries</small>
+            <a href="mailto:support@nexusesports.com" class="text-success fw-bold text-decoration-none fs-7">support@nexusesports.com</a>
+          </div>
+        </div>
+
+        <div class="col-md-4 text-center">
+          <div class="p-4 rounded bg-dark border border-secondary h-100">
+            <i class="fab fa-discord fa-2x text-info mb-3"></i>
+            <h5 class="text-light text-uppercase">Discord Server</h5>
+            <small class="text-muted d-block mb-2">Live admin assistance & scrims</small>
+            <a href="#" class="text-info fw-bold text-decoration-none fs-7">discord.gg/nexusesports</a>
+          </div>
+        </div>
+
+        <div class="col-md-4 text-center">
+          <div class="p-4 rounded bg-dark border border-secondary h-100">
+            <i class="fas fa-receipt fa-2x text-warning mb-3"></i>
+            <h5 class="text-light text-uppercase">Payment Help</h5>
+            <small class="text-muted d-block mb-2">Razorpay & Refund tracking</small>
+            <a href="mailto:payments@nexusesports.com" class="text-warning fw-bold text-decoration-none fs-7">payments@nexusesports.com</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Support Form -->
+      <form onsubmit="handleContactSubmit(event)">
+        <h4 class="text-uppercase text-light mb-3">Send Support Message</h4>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label text-muted text-uppercase fs-7">Your Name</label>
+            <input type="text" id="c-name" class="form-control" placeholder="John Doe" required>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label text-muted text-uppercase fs-7">Your Email</label>
+            <input type="email" id="c-email" class="form-control" placeholder="john@example.com" required>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label text-muted text-uppercase fs-7">Subject / Registration ID</label>
+          <input type="text" id="c-subject" class="form-control" placeholder="e.g. Query regarding REG-1001" required>
+        </div>
+        <div class="mb-4">
+          <label class="form-label text-muted text-uppercase fs-7">Message</label>
+          <textarea id="c-message" class="form-control" rows="4" placeholder="Describe your issue or question..." required></textarea>
+        </div>
+        <button type="submit" class="btn-neon w-100 justify-content-center btn-lg"><i class="fas fa-paper-plane me-2"></i> Submit Message</button>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container text-center">
+      <div class="d-flex justify-content-center gap-3 mb-3 flex-wrap text-uppercase fs-7 fw-bold">
+        <a href="/terms-and-conditions.html" class="text-muted text-decoration-none">Terms & Conditions</a>
+        <a href="/privacy-policy.html" class="text-muted text-decoration-none">Privacy Policy</a>
+        <a href="/refund-policy.html" class="text-muted text-decoration-none">Refund Policy</a>
+        <a href="/fair-play.html" class="text-muted text-decoration-none">Fair Play</a>
+        <a href="/contact.html" class="text-success text-decoration-none">Contact Us</a>
+      </div>
+      <p class="mb-1">&copy; 2026 Nexus Esports Platform. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/api.js"></script>
+  <script>
+    function handleContactSubmit(e) {
+      e.preventDefault();
+      showToast('Thank you! Your message has been sent to Nexus Support.');
+      e.target.reset();
+    }
+  </script>
+</body>
+</html>

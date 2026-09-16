@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Tournament - Nexus Admin</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand" href="/index.html"><i class="fas fa-user-shield text-warning me-1"></i> NEXUS<span>ADMIN</span></a>
+      <ul class="navbar-nav ms-auto" id="auth-nav"></ul>
+    </div>
+  </nav>
+
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <a href="/admin/dashboard.html" class="admin-sidebar-link"><i class="fas fa-chart-line"></i> Dashboard</a>
+      <a href="/admin/tournaments.html" class="admin-sidebar-link"><i class="fas fa-trophy"></i> Tournaments</a>
+      <a href="/admin/create-tournament.html" class="admin-sidebar-link active"><i class="fas fa-plus-circle"></i> Create Tournament</a>
+      <a href="/admin/teams.html" class="admin-sidebar-link"><i class="fas fa-users"></i> Teams</a>
+      <a href="/admin/matches.html" class="admin-sidebar-link"><i class="fas fa-gamepad"></i> Matches & Rooms</a>
+      <a href="/admin/results.html" class="admin-sidebar-link"><i class="fas fa-medal"></i> Declare Results</a>
+      <a href="/admin/users.html" class="admin-sidebar-link"><i class="fas fa-user-cog"></i> Users</a>
+      <a href="/admin/payments.html" class="admin-sidebar-link"><i class="fas fa-receipt"></i> Payments & Revenue</a>
+      <a href="/index.html" class="admin-sidebar-link text-danger mt-auto"><i class="fas fa-globe"></i> Back to Main Site</a>
+    </aside>
+
+    <main class="admin-content">
+      <div class="card-glass" style="max-width: 850px;">
+        <h2 class="text-uppercase text-light mb-1"><i class="fas fa-plus-circle text-success me-2"></i> Create New Tournament</h2>
+        <p class="text-muted mb-4">Set game rules, team size, entry fees, prize distribution, and dates.</p>
+
+        <form onsubmit="handleCreateTournament(event)">
+          <div class="row">
+            <div class="col-md-8 mb-3">
+              <label class="form-label text-muted text-uppercase fs-7">Tournament Title</label>
+              <input type="text" id="t-title" class="form-control" placeholder="e.g. BGMI India Championship 2026" required>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label class="form-label text-muted text-uppercase fs-7">Game</label>
+              <select id="t-game" class="form-select" required>
+                <option value="BGMI">BGMI</option>
+                <option value="Free Fire">Free Fire</option>
+                <option value="Valorant">Valorant</option>
+                <option value="Counter-Strike">Counter-Strike</option>
+                <option value="FIFA / EA FC">FIFA / EA FC</option>
+                <option value="Call of Duty">Call of Duty</option>
+                <option value="PUBG">PUBG</option>
+                <option value="Other">Other Custom Game</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-3 mb-3">
+              <label class="form-label text-muted text-uppercase fs-7">Format</label>
+              <select id="t-format" class="form-select">
+                <option value="Squad">Squad</option>
+                <option value="Solo">Solo</option>
+                <option value="Duo">Duo</option>
+                <option value="5v5">5v5</option>
+                <option value="Custom">Custom</option>
+              </select>
+            </div>
+            <div class="col-md-3 mb-3">
+              <label class="form-label text-muted text-uppercase fs-7">Team Size</label>
+              <input type="number" id="t-teamSize" class="form-control" value="4" required min="1" oninput="updateCalculatedTotalFee()">
+            </div>
+            <div class="col-md-3 mb-3">
+              <label class="form-label text-muted text-uppercase fs-7">Fee Per Player (₹)</label>
+              <input type="number" id="t-feePerPlayer" class="form-control" value="50" required min="0" oninput="updateCalculatedTotalFee()">
+            </div>
+            <div class="col-md-3 mb-3">
+              <label class="form-label text-muted text-uppercase fs-7">Max Teams</label>
+              <input type="number" id="t-maxTeams" class="form-control" value="16" required min="2">
+            </div>
+          </div>
+
+          <div class="p-3 rounded bg-dark border border-success mb-3">
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="text-muted text-uppercase fs-7"><i class="fas fa-calculator text-success me-1"></i> Auto-Calculated Entry Fee:</span>
+              <span id="calculated-total-fee-badge" class="fs-5 fw-bold text-success">4 Players × ₹50 = ₹200 / Squad</span>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label class="form-label text-muted text-uppercase fs-7">Prize Pool (₹)</label>
+              <input type="number" id="t-prizePool" class="form-control" value="10000" required min="0">
+            </div>
+            <div class="col-md-4 mb-3">
+              <label class="form-label text-muted text-uppercase fs-7">Registration Deadline</label>
+              <input type="datetime-local" id="t-deadline" class="form-control" required>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label class="form-label text-muted text-uppercase fs-7">Tournament Start Date</label>
+              <input type="datetime-local" id="t-startDate" class="form-control" required>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-muted text-uppercase fs-7">Banner Image URL</label>
+            <input type="url" id="t-banner" class="form-control" placeholder="https://images.unsplash.com/...">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-muted text-uppercase fs-7">Description</label>
+            <textarea id="t-description" class="form-control" rows="3" required placeholder="Describe tournament structure, maps, and stages..."></textarea>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label text-muted text-uppercase fs-7">Official Tournament Rules</label>
+            <textarea id="t-rules" class="form-control" rows="3" placeholder="1. Fair play mandatory..."></textarea>
+          </div>
+
+          <button type="submit" class="btn-neon btn-lg w-100 justify-content-center"><i class="fas fa-check-circle me-2"></i> Publish Tournament</button>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/admin.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => checkAdminAccess());
+  </script>
+</body>
+</html>

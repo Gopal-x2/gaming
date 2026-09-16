@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Declare Results - Nexus Admin</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand" href="/index.html"><i class="fas fa-user-shield text-warning me-1"></i> NEXUS<span>ADMIN</span></a>
+      <ul class="navbar-nav ms-auto" id="auth-nav"></ul>
+    </div>
+  </nav>
+
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <a href="/admin/dashboard.html" class="admin-sidebar-link"><i class="fas fa-chart-line"></i> Dashboard</a>
+      <a href="/admin/tournaments.html" class="admin-sidebar-link"><i class="fas fa-trophy"></i> Tournaments</a>
+      <a href="/admin/create-tournament.html" class="admin-sidebar-link"><i class="fas fa-plus-circle"></i> Create Tournament</a>
+      <a href="/admin/teams.html" class="admin-sidebar-link"><i class="fas fa-users"></i> Teams</a>
+      <a href="/admin/matches.html" class="admin-sidebar-link"><i class="fas fa-gamepad"></i> Matches & Rooms</a>
+      <a href="/admin/results.html" class="admin-sidebar-link active"><i class="fas fa-medal"></i> Declare Results</a>
+      <a href="/admin/users.html" class="admin-sidebar-link"><i class="fas fa-user-cog"></i> Users</a>
+      <a href="/admin/payments.html" class="admin-sidebar-link"><i class="fas fa-receipt"></i> Payments & Revenue</a>
+      <a href="/index.html" class="admin-sidebar-link text-danger mt-auto"><i class="fas fa-globe"></i> Back to Main Site</a>
+    </aside>
+
+    <main class="admin-content">
+      <div class="card-glass" style="max-width: 850px;">
+        <h2 class="text-uppercase text-light mb-1"><i class="fas fa-trophy text-warning me-2"></i> Update Tournament Scores & Winners</h2>
+        <p class="text-muted mb-4">Enter team standings, kills, total points, and declare tournament champions.</p>
+
+        <form onsubmit="handleSaveResults(event)">
+          <div class="mb-3">
+            <label class="form-label text-muted text-uppercase fs-7">Select Tournament</label>
+            <select id="res-tournament" class="form-select" onchange="loadTournamentTeamsForResults(this.value)" required>
+              <option value="">-- Choose Tournament --</option>
+            </select>
+          </div>
+
+          <div id="results-table-container" class="my-4 d-none">
+            <h5 class="text-light text-uppercase mb-3">Team Standings & Score Input</h5>
+            <div class="table-responsive">
+              <table class="table table-custom">
+                <thead>
+                  <tr>
+                    <th>Team</th>
+                    <th>Rank</th>
+                    <th>Played</th>
+                    <th>Wins</th>
+                    <th>Kills</th>
+                    <th>Points</th>
+                    <th>Prize (₹)</th>
+                  </tr>
+                </thead>
+                <tbody id="res-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-neon w-100 justify-content-center btn-lg"><i class="fas fa-save me-2"></i> Save & Broadcast Leaderboard</button>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/admin.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      checkAdminAccess();
+      try {
+        const data = await apiRequest('/tournaments?status=', 'GET', null, false);
+        const sel = document.getElementById('res-tournament');
+        data.tournaments.forEach(t => {
+          const opt = document.createElement('option');
+          opt.value = t._id;
+          opt.textContent = `${t.title} (${t.game})`;
+          sel.appendChild(opt);
+        });
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    });
+
+    async function loadTournamentTeamsForResults(tournamentId) {
+      if (!tournamentId) return;
+      try {
+        const data = await apiRequest(`/matches/leaderboard/${tournamentId}`, 'GET', null, false);
+        const tbody = document.getElementById('res-tbody');
+        const container = document.getElementById('results-table-container');
+        container.classList.remove('d-none');
+
+        tbody.innerHTML = data.leaderboard.map((item, idx) => `
+          <tr>
+            <td class="fw-bold text-light">${item.team ? item.team.name : 'Team'}
+              <input type="hidden" class="res-team-id" value="${item.team ? item.team._id : ''}">
+            </td>
+            <td><input type="number" class="form-control form-control-sm res-rank" value="${item.rank || idx + 1}"></td>
+            <td><input type="number" class="form-control form-control-sm res-played" value="${item.matchesPlayed || 1}"></td>
+            <td><input type="number" class="form-control form-control-sm res-wins" value="${item.wins || 0}"></td>
+            <td><input type="number" class="form-control form-control-sm res-kills" value="${item.kills || 0}"></td>
+            <td><input type="number" class="form-control form-control-sm res-points" value="${item.points || 0}"></td>
+            <td><input type="number" class="form-control form-control-sm res-prize" value="${item.prizeWon || 0}"></td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    async function handleSaveResults(e) {
+      e.preventDefault();
+      const tournamentId = document.getElementById('res-tournament').value;
+      const teamIds = document.querySelectorAll('.res-team-id');
+      const ranks = document.querySelectorAll('.res-rank');
+      const playeds = document.querySelectorAll('.res-played');
+      const wins = document.querySelectorAll('.res-wins');
+      const kills = document.querySelectorAll('.res-kills');
+      const points = document.querySelectorAll('.res-points');
+      const prizes = document.querySelectorAll('.res-prize');
+
+      const results = [];
+      for (let i = 0; i < teamIds.length; i++) {
+        results.push({
+          teamId: teamIds[i].value,
+          rank: parseInt(ranks[i].value),
+          matchesPlayed: parseInt(playeds[i].value),
+          wins: parseInt(wins[i].value),
+          kills: parseInt(kills[i].value),
+          points: parseInt(points[i].value),
+          prizeWon: parseFloat(prizes[i].value),
+        });
+      }
+
+      try {
+        await apiRequest('/admin/results', 'POST', { tournamentId, results });
+        showToast('Tournament results & leaderboard updated successfully!');
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+  </script>
+</body>
+</html>
