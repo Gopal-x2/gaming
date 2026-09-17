@@ -76,7 +76,7 @@ async function handleCreateTournament(event) {
   event.preventDefault();
   const title = document.getElementById('t-title').value.trim();
   const game = document.getElementById('t-game').value;
-  const banner = document.getElementById('t-banner').value.trim();
+  const banner = document.getElementById('t-banner').value.trim(); // Base64 string from hidden input
   const format = document.getElementById('t-format').value;
   const teamSize = parseInt(document.getElementById('t-teamSize').value);
   const feePerPlayer = parseFloat(document.getElementById('t-feePerPlayer').value);
@@ -355,4 +355,35 @@ async function loadAdminPayments() {
   } catch (error) {
     showToast(error.message, 'error');
   }
+}
+
+// Handle Banner Image Upload & Preview in Base64
+const bannerFileInput = document.getElementById('t-banner-file');
+if (bannerFileInput) {
+  bannerFileInput.addEventListener('change', function (e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Check size (limit to 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      showToast('Image size should be less than 2MB', 'error');
+      this.value = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function (event) {
+      const base64String = event.target.result;
+      document.getElementById('t-banner').value = base64String;
+      
+      // Show Preview
+      const previewContainer = document.getElementById('banner-preview-container');
+      const previewImg = document.getElementById('banner-preview');
+      if (previewContainer && previewImg) {
+        previewImg.src = base64String;
+        previewContainer.classList.remove('d-none');
+      }
+    };
+    reader.readAsDataURL(file);
+  });
 }
