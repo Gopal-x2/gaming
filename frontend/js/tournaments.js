@@ -138,6 +138,33 @@ async function loadTournamentDetails() {
     document.getElementById('t-format').textContent = `${t.format} (${t.teamSize} Players)`;
     document.getElementById('t-slots').textContent = `${t.registeredTeamsCount} / ${t.maxTeams} (${t.slotsLeft} slots left)`;
     document.getElementById('t-deadline').textContent = new Date(t.registrationDeadline).toLocaleString();
+    
+    // Countdown Timer Logic
+    const deadlineTime = new Date(t.registrationDeadline).getTime();
+    const countdownEl = document.getElementById('t-countdown');
+    if (window.tournamentTimer) clearInterval(window.tournamentTimer);
+    
+    if (countdownEl) {
+      const updateTimer = () => {
+        const now = new Date().getTime();
+        const distance = deadlineTime - now;
+        
+        if (distance < 0) {
+          clearInterval(window.tournamentTimer);
+          countdownEl.textContent = "Registration Closed";
+          countdownEl.className = "badge bg-danger text-light mt-1";
+        } else {
+          const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+          countdownEl.textContent = `Ends in: ${days}d ${hours}h ${minutes}m ${seconds}s`;
+        }
+      };
+      updateTimer(); // Initial call
+      window.tournamentTimer = setInterval(updateTimer, 1000);
+    }
+
     document.getElementById('t-start').textContent = new Date(t.startDate).toLocaleString();
     document.getElementById('t-organizer').textContent = t.organizer;
     document.getElementById('t-description').textContent = t.description;
