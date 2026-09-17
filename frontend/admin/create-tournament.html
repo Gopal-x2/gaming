@@ -45,16 +45,18 @@
             </div>
             <div class="col-md-4 mb-3">
               <label class="form-label text-muted text-uppercase fs-7">Game</label>
-              <select id="t-game" class="form-select" required>
-                <option value="BGMI">BGMI</option>
-                <option value="Free Fire">Free Fire</option>
-                <option value="Valorant">Valorant</option>
-                <option value="Counter-Strike">Counter-Strike</option>
-                <option value="FIFA / EA FC">FIFA / EA FC</option>
-                <option value="Call of Duty">Call of Duty</option>
-                <option value="PUBG">PUBG</option>
-                <option value="Other">Other Custom Game</option>
-              </select>
+              <input type="text" id="t-game" class="form-control" list="game-options" placeholder="e.g. GTA 5, BGMI..." required>
+              <datalist id="game-options">
+                <option value="BGMI">
+                <option value="Free Fire">
+                <option value="Valorant">
+                <option value="Counter-Strike">
+                <option value="FIFA / EA FC">
+                <option value="Call of Duty">
+                <option value="PUBG">
+                <option value="GTA V">
+                <option value="Clash of Clans">
+              </datalist>
             </div>
           </div>
 
