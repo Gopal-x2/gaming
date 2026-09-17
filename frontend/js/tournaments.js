@@ -285,3 +285,35 @@ async function updateModalFeePreview() {
     showToast(error.message, 'error');
   }
 }
+
+// Share Tournament Function
+function shareTournament() {
+  const url = window.location.href;
+  const title = document.getElementById('t-title')?.textContent || 'Nexus Esports Tournament';
+  
+  if (navigator.share) {
+    navigator.share({
+      title: title,
+      text: 'Check out this awesome tournament on Nexus Esports!',
+      url: url
+    }).catch(err => {
+      console.log('Error sharing:', err);
+      // Fallback if user cancels share or it fails
+    });
+  } else {
+    // Fallback for browsers that do not support Web Share API
+    navigator.clipboard.writeText(url).then(() => {
+      if(typeof showToast === 'function') {
+        showToast('Tournament link copied to clipboard!', 'success');
+      } else {
+        alert('Tournament link copied to clipboard!');
+      }
+    }).catch(() => {
+      if(typeof showToast === 'function') {
+        showToast('Failed to copy link', 'error');
+      } else {
+        alert('Failed to copy link');
+      }
+    });
+  }
+}
