@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus Esports - Paid Gaming Tournament Platform</title>
+  <!-- Bootstrap 5 CSS & FontAwesome -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/tournament.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container-fluid px-lg-4">
+      <a class="navbar-brand me-3" href="/index.html">
+        <i class="fas fa-gamepad text-success"></i> NEXUS<span>ESPORTS</span>
+      </a>
+      <button class="navbar-toggler navbar-dark" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto flex-row flex-wrap gap-1 align-items-center">
+          <li class="nav-item"><a class="nav-link active" href="/index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="/tournaments.html">Tournaments</a></li>
+          <li class="nav-item"><a class="nav-link" href="/matches.html">Matches</a></li>
+          <li class="nav-item"><a class="nav-link" href="/leaderboard.html">Leaderboard</a></li>
+        </ul>
+        <ul class="navbar-nav ms-auto align-items-center flex-row" id="auth-nav">
+          <!-- Populated by api.js -->
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="py-4 text-center text-light position-relative overflow-hidden" style="background: radial-gradient(circle at center, rgba(0,255,136,0.08) 0%, rgba(10,13,20,1) 75%); min-height: 340px; display:flex; align-items:center;">
+    <div class="container py-3">
+      <span class="badge bg-dark border border-success text-success px-3 py-1 mb-2 rounded-pill text-uppercase fs-7">
+        <i class="fas fa-bolt me-1"></i> Competitive Esports Arena
+      </span>
+      <h1 class="hero-title mb-2 text-uppercase text-light">COMPETE. CONQUER. <span style="color:var(--accent-green);">WIN.</span></h1>
+      <p class="hero-subtitle mx-auto mb-3">
+        Join India's premier gaming tournament platform. Register your squad for BGMI, Valorant, Free Fire & more to compete for massive prize pools!
+      </p>
+      <div class="d-flex justify-content-center gap-2">
+        <a href="/tournaments.html" class="btn-neon"><i class="fas fa-trophy me-1"></i> Explore Tournaments</a>
+        <a href="/create-team.html" class="btn-outline-neon"><i class="fas fa-users me-1"></i> Create Your Team</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Quick Stats Counter Section -->
+  <section class="py-3" style="background: var(--bg-secondary); border-top:1px solid var(--border-color); border-bottom:1px solid var(--border-color);">
+    <div class="container">
+      <div class="row text-center text-light g-2">
+        <div class="col-md-3 col-6">
+          <h3 class="fw-bold text-success mb-0 fs-4">₹5,00,000+</h3>
+          <small class="text-muted text-uppercase fs-7">Total Cash Prizes Paid</small>
+        </div>
+        <div class="col-md-3 col-6">
+          <h3 class="fw-bold text-warning mb-0 fs-4">150+</h3>
+          <small class="text-muted text-uppercase fs-7">Tournaments Organized</small>
+        </div>
+        <div class="col-md-3 col-6">
+          <h3 class="fw-bold text-info mb-0 fs-4">25,000+</h3>
+          <small class="text-muted text-uppercase fs-7">Registered Gamers</small>
+        </div>
+        <div class="col-md-3 col-6">
+          <h3 class="fw-bold text-danger mb-0 fs-4">100%</h3>
+          <small class="text-muted text-uppercase fs-7">Automated & Secure</small>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Tournaments Section -->
+  <section class="py-4">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-end mb-3">
+        <div>
+          <span class="text-success text-uppercase fw-bold fs-7">Hot Contests</span>
+          <h3 class="text-light mb-0">Featured Tournaments</h3>
+        </div>
+        <a href="/tournaments.html" class="btn-outline-neon btn-sm">View All <i class="fas fa-arrow-right ms-1"></i></a>
+      </div>
+      <div class="row" id="tournaments-container">
+        <!-- Rendered by tournaments.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Popular Games Section -->
+  <section class="py-4" style="background: var(--bg-secondary);">
+    <div class="container">
+      <div class="text-center mb-4">
+        <span class="text-success text-uppercase fw-bold fs-7">Supported Titles</span>
+        <h3 class="text-light">Popular Tournament Games</h3>
+      </div>
+      <div class="row g-3 text-center">
+        <div class="col-lg-3 col-md-4 col-6">
+          <div class="card-glass py-3">
+            <i class="fas fa-crosshairs fa-2x text-success mb-2"></i>
+            <h5 class="text-light mb-0">BGMI</h5>
+            <small class="text-muted">Squad Battle Royale</small>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-4 col-6">
+          <div class="card-glass py-3">
+            <i class="fas fa-fire fa-2x text-danger mb-2"></i>
+            <h5 class="text-light mb-0">Free Fire</h5>
+            <small class="text-muted">Survival Battleground</small>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-4 col-6">
+          <div class="card-glass py-3">
+            <i class="fas fa-bullseye fa-2x text-info mb-2"></i>
+            <h5 class="text-light mb-0">Valorant</h5>
+            <small class="text-muted">5v5 Tactical Shooter</small>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-4 col-6">
+          <div class="card-glass py-3">
+            <i class="fas fa-gamepad fa-2x text-warning mb-2"></i>
+            <h5 class="text-light mb-0">FIFA / EA FC</h5>
+            <small class="text-muted">1v1 Esports Football</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container text-center">
+      <div class="d-flex justify-content-center gap-3 mb-2 flex-wrap text-uppercase fs-7 fw-bold">
+        <a href="/terms-and-conditions.html" class="text-muted text-decoration-none">Terms & Conditions</a>
+        <a href="/privacy-policy.html" class="text-muted text-decoration-none">Privacy Policy</a>
+        <a href="/refund-policy.html" class="text-muted text-decoration-none">Refund Policy</a>
+        <a href="/fair-play.html" class="text-muted text-decoration-none">Fair Play</a>
+        <a href="/contact.html" class="text-muted text-decoration-none">Contact Us</a>
+      </div>
+      <p class="mb-1">&copy; 2026 Nexus Esports Platform. All rights reserved.</p>
+      <small class="text-muted">Built for competitive esports gamers across India.</small>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS & Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/tournaments.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      loadTournamentsList(true);
+    });
+  </script>
+</body>
+</html>
