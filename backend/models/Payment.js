@@ -4,13 +4,17 @@ const PaymentSchema = new mongoose.Schema(
   {
     razorpayOrderId: {
       type: String,
-      required: true,
+      // Removed required: true for UPI
     },
     razorpayPaymentId: {
       type: String,
       default: '',
     },
     razorpaySignature: {
+      type: String,
+      default: '',
+    },
+    utrNumber: {
       type: String,
       default: '',
     },
@@ -39,7 +43,7 @@ const PaymentSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['CREATED', 'SUCCESS', 'FAILED', 'REFUNDED'],
+      enum: ['CREATED', 'PENDING', 'SUCCESS', 'FAILED', 'REFUNDED'],
       default: 'CREATED',
     },
   },

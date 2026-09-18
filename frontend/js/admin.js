@@ -341,17 +341,34 @@ async function loadAdminPayments() {
       .map(
         (p) => `
         <tr>
-          <td><code>${p.razorpayOrderId}</code></td>
+          <td><code>${p.utrNumber || 'N/A'}</code></td>
           <td class="fw-bold text-light">${p.user ? p.user.name : 'Unknown User'}</td>
           <td>${p.tournament ? p.tournament.title : ''}</td>
           <td>${p.team ? p.team.name : ''}</td>
           <td class="text-warning fw-bold">₹${p.amount}</td>
-          <td><span class="badge-status ${p.status === 'SUCCESS' ? 'badge-open' : 'badge-closed'}">${p.status}</span></td>
+          <td><span class="badge ${p.status === 'SUCCESS' ? 'bg-success' : p.status === 'PENDING' ? 'bg-warning text-dark' : 'bg-danger'}">${p.status}</span></td>
           <td>${new Date(p.createdAt).toLocaleString()}</td>
+          <td>
+            ${p.status === 'PENDING' ? `
+              <button class="btn btn-sm btn-success me-1" onclick="verifyPaymentAdmin('${p._id}', 'SUCCESS')">Approve</button>
+              <button class="btn btn-sm btn-danger" onclick="verifyPaymentAdmin('${p._id}', 'FAILED')">Reject</button>
+            ` : ''}
+          </td>
         </tr>
       `
       )
       .join('');
+  } catch (error) {
+    showToast(error.message, 'error');
+  }
+}
+
+async function verifyPaymentAdmin(paymentId, status) {
+  if (!confirm(`Are you sure you want to mark this payment as ${status}?`)) return;
+  try {
+    await apiRequest(`/admin/payments/${paymentId}/verify`, 'PUT', { status });
+    showToast(`Payment marked as ${status}`);
+    loadAdminPayments();
   } catch (error) {
     showToast(error.message, 'error');
   }

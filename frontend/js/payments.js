@@ -27,59 +27,67 @@ async function initiateTournamentPayment(event) {
       return;
     }
 
-    // Paid tournament flow via Razorpay
-    const options = {
-      key: data.keyId,
-      amount: data.amount,
-      currency: data.currency,
-      name: 'Nexus Esports Platform',
-      description: `Registration for ${data.tournamentTitle} (${data.teamName})`,
-      image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=200&auto=format&fit=crop&q=80',
-      order_id: data.orderId,
-      handler: async function (response) {
-        showToast('Payment completed! Verifying signature with server...', 'warning');
-        await verifyServerPayment({
-          razorpayOrderId: response.razorpay_order_id || data.orderId,
-          razorpayPaymentId: response.razorpay_payment_id || `pay_mock_${Date.now()}`,
-          razorpaySignature: response.razorpay_signature || 'mock_signature',
-          tournamentId,
-          teamId,
-        });
-      },
-      prefill: {
-        name: getUser() ? getUser().name : '',
-        email: getUser() ? getUser().email : '',
-        contact: getUser() ? getUser().phone : '',
-      },
-      theme: {
-        color: '#00ff88',
-      },
-    };
+    // Paid tournament flow via Manual UPI
+    // 1. Hide the register modal
+    const registerModalEl = document.getElementById('registerModal');
+    if (registerModalEl) {
+      const bsModal = bootstrap.Modal.getInstance(registerModalEl);
+      if (bsModal) bsModal.hide();
+    }
 
-    // If Razorpay SDK is available on window, open Checkout modal
-    if (window.Razorpay) {
-      const rzp = new window.Razorpay(options);
-      rzp.on('payment.failed', function (resp) {
-        showToast('Payment failed: ' + resp.error.description, 'error');
-      });
-      rzp.open();
-    } else {
-      // Mock / Test Fallback mode when Razorpay script isn't loaded
-      showToast('Opening Payment Sandbox Checkout...', 'warning');
-      setTimeout(async () => {
-        await verifyServerPayment({
-          razorpayOrderId: data.orderId,
-          razorpayPaymentId: `pay_mock_${Date.now()}`,
-          razorpaySignature: 'mock_signature',
-          tournamentId,
-          teamId,
-        });
-      }, 1500);
+    // 2. Populate UPI Modal
+    document.getElementById('upi-amount').textContent = `₹${data.amount}`;
+    document.getElementById('upi-payment-id').value = data.paymentId;
+    document.getElementById('upi-tournament-id').value = tournamentId;
+    document.getElementById('upi-team-id').value = teamId;
+    document.getElementById('upi-utr').value = '';
+
+    // 3. Show UPI Modal
+    const upiModalEl = document.getElementById('upiPaymentModal');
+    if (upiModalEl) {
+      const upiModal = new bootstrap.Modal(upiModalEl);
+      upiModal.show();
     }
   } catch (error) {
     showToast(error.message, 'error');
   }
 }
+
+// Handle UPI Form Submission
+document.addEventListener('DOMContentLoaded', () => {
+  const upiForm = document.getElementById('upi-payment-form');
+  if (upiForm) {
+    upiForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const utr = document.getElementById('upi-utr').value.trim();
+      const paymentId = document.getElementById('upi-payment-id').value;
+      const tournamentId = document.getElementById('upi-tournament-id').value;
+      const teamId = document.getElementById('upi-team-id').value;
+
+      if (utr.length !== 12) return showToast('UTR must be exactly 12 digits', 'error');
+
+      try {
+        const res = await apiRequest('/payments/submit-upi', 'POST', {
+          utrNumber: utr,
+          paymentId,
+          tournamentId,
+          teamId
+        });
+
+        showToast(res.message, 'success');
+        
+        // Hide modal
+        const upiModalEl = document.getElementById('upiPaymentModal');
+        const upiModal = bootstrap.Modal.getInstance(upiModalEl);
+        if (upiModal) upiModal.hide();
+
+        setTimeout(() => (window.location.href = '/my-tournaments.html'), 2000);
+      } catch (error) {
+        showToast(error.message, 'error');
+      }
+    });
+  }
+});
 
 async function verifyServerPayment(payload) {
   try {

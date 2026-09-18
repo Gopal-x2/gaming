@@ -173,3 +173,37 @@
   </script>
 </body>
 </html>
+
+<!-- UPI Payment Modal -->
+<div class="modal fade" id="upiPaymentModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark border-secondary">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title text-light"><i class="fas fa-qrcode text-success me-2"></i> Make Payment</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <p class="text-muted mb-4">Please pay <strong class="text-warning fs-4" id="upi-amount">₹0</strong> to register your team.</p>
+        
+        <div class="bg-light p-3 rounded d-inline-block mb-3">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=nexusgaming@upi&pn=Nexus%20Esports&cu=INR" alt="QR Code" width="200" height="200">
+        </div>
+        <p class="text-light fw-bold mb-1">UPI ID: <span class="text-info">nexusgaming@upi</span></p>
+        <p class="text-muted small mb-4">Scan with PhonePe, GPay, or Paytm</p>
+
+        <form id="upi-payment-form">
+          <input type="hidden" id="upi-payment-id">
+          <input type="hidden" id="upi-tournament-id">
+          <input type="hidden" id="upi-team-id">
+          
+          <div class="mb-3 text-start">
+            <label class="form-label text-light fs-7">Enter 12-Digit UTR / Transaction ID</label>
+            <input type="text" class="form-control" id="upi-utr" placeholder="e.g. 312345678901" required minlength="12" maxlength="12" pattern="[0-9]{12}">
+            <div class="form-text text-muted">You can find this in your payment app history.</div>
+          </div>
+          <button type="submit" class="btn btn-success w-100" id="btn-submit-upi">Submit Payment Details</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
