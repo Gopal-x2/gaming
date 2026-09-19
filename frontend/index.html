@@ -1,151 +1,160 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Nexus Digital Solutions - Web Development Agency</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <link rel="stylesheet" href="/css/style.css" />
-  <style>
-    body { background-color: #0b0f19; color: #f0f4f8; }
-    .navbar { background-color: rgba(11, 15, 25, 0.95); border-bottom: 1px solid #1f2937; }
-    .hero-section { padding: 100px 0; background: linear-gradient(135deg, #0b0f19 0%, #1f2937 100%); }
-    .card-service { background: #1f2937; border: 1px solid #374151; border-radius: 8px; padding: 30px; text-align: center; transition: 0.3s; height: 100%; }
-    .card-service:hover { border-color: #00ff88; transform: translateY(-5px); }
-    .text-accent { color: #00ff88; }
-    .btn-accent { background-color: #00ff88; color: #0b0f19; font-weight: bold; }
-    .btn-accent:hover { background-color: #00cc6a; color: #0b0f19; }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus Esports - Paid Gaming Tournament Platform</title>
+  <!-- Bootstrap 5 CSS & FontAwesome -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/tournament.css">
 </head>
 <body>
 
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark sticky-top py-3">
-    <div class="container">
-      <a class="navbar-brand fw-bold text-light" href="/index.html">
-        <i class="fas fa-code text-accent me-2"></i> NEXUS <span class="text-accent">DIGITAL</span>
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container-fluid px-lg-4">
+      <a class="navbar-brand me-3" href="/index.html">
+        <i class="fas fa-gamepad text-success"></i> NEXUS<span>ESPORTS</span>
       </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <button class="navbar-toggler navbar-dark" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-        <ul class="navbar-nav align-items-center gap-3">
-          <li class="nav-item"><a class="nav-link active" href="#services">Services</a></li>
-          <li class="nav-item"><a class="nav-link" href="#pricing">Pricing</a></li>
-          <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
-          <li class="nav-item"><a class="btn btn-outline-light btn-sm" href="/login.html">Client Login</a></li>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto flex-row flex-wrap gap-1 align-items-center">
+          <li class="nav-item"><a class="nav-link active" href="/index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="/tournaments.html">Tournaments</a></li>
+          <li class="nav-item"><a class="nav-link" href="/matches.html">Matches</a></li>
+          <li class="nav-item"><a class="nav-link" href="/leaderboard.html">Leaderboard</a></li>
+        </ul>
+        <ul class="navbar-nav ms-auto align-items-center flex-row" id="auth-nav">
+          <!-- Populated by api.js -->
         </ul>
       </div>
     </div>
   </nav>
 
   <!-- Hero Section -->
-  <header class="hero-section text-center">
-    <div class="container">
-      <h1 class="display-4 fw-bold mb-4">Transform Your Business with <span class="text-accent">Modern Web Solutions</span></h1>
-      <p class="lead mb-5 text-muted mx-auto" style="max-width: 700px;">
-        We build scalable web applications, stunning landing pages, and enterprise software to help your business grow in the digital era.
+  <header class="py-4 text-center text-light position-relative overflow-hidden" style="background: radial-gradient(circle at center, rgba(0,255,136,0.08) 0%, rgba(10,13,20,1) 75%); min-height: 340px; display:flex; align-items:center;">
+    <div class="container py-3">
+      <span class="badge bg-dark border border-success text-success px-3 py-1 mb-2 rounded-pill text-uppercase fs-7">
+        <i class="fas fa-bolt me-1"></i> Competitive Esports Arena
+      </span>
+      <h1 class="hero-title mb-2 text-uppercase text-light">COMPETE. CONQUER. <span style="color:var(--accent-green);">WIN.</span></h1>
+      <p class="hero-subtitle mx-auto mb-3">
+        Join India's premier gaming tournament platform. Register your squad for BGMI, Valorant, Free Fire & more to compete for massive prize pools!
       </p>
-      <a href="#contact" class="btn btn-accent btn-lg px-5 py-3 rounded-pill">Get a Free Consultation</a>
+      <div class="d-flex justify-content-center gap-2">
+        <a href="/tournaments.html" class="btn-neon"><i class="fas fa-trophy me-1"></i> Explore Tournaments</a>
+        <a href="/create-team.html" class="btn-outline-neon"><i class="fas fa-users me-1"></i> Create Your Team</a>
+      </div>
     </div>
   </header>
 
-  <!-- Services Section -->
-  <section id="services" class="py-5">
-    <div class="container py-5">
-      <div class="text-center mb-5">
-        <h2 class="fw-bold">Our Services</h2>
-        <p class="text-muted">Comprehensive software solutions for modern businesses.</p>
-      </div>
-      <div class="row g-4">
-        <div class="col-md-4">
-          <div class="card-service">
-            <i class="fas fa-laptop-code fa-3x text-accent mb-3"></i>
-            <h4>Web Development</h4>
-            <p class="text-muted text-sm">Custom websites and web applications built with React, Node.js, and modern tech stacks.</p>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card-service">
-            <i class="fas fa-mobile-alt fa-3x text-accent mb-3"></i>
-            <h4>App Development</h4>
-            <p class="text-muted text-sm">Cross-platform mobile applications for iOS and Android to reach your customers anywhere.</p>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card-service">
-            <i class="fas fa-search-dollar fa-3x text-accent mb-3"></i>
-            <h4>SEO & Marketing</h4>
-            <p class="text-muted text-sm">Digital marketing and SEO optimization to rank your business higher on search engines.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Pricing -->
-  <section id="pricing" class="py-5" style="background-color: rgba(255,255,255,0.02);">
-    <div class="container py-5 text-center">
-      <h2 class="fw-bold mb-4">Transparent Pricing</h2>
-      <p class="text-muted mb-5">Pay securely via Razorpay for our standard software packages.</p>
-      <div class="row justify-content-center g-4">
-        <div class="col-md-4">
-          <div class="card-service text-start">
-            <h4 class="text-accent">Basic Website</h4>
-            <h2 class="my-3">₹4,999</h2>
-            <ul class="text-muted mb-4 ps-3">
-              <li>Up to 5 Pages</li>
-              <li>Mobile Responsive</li>
-              <li>Contact Form</li>
-              <li>1 Month Support</li>
-            </ul>
-            <button class="btn btn-outline-light w-100" onclick="alert('Please login to purchase services.')">Purchase Now</button>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card-service text-start" style="border-color: #00ff88;">
-            <h4 class="text-accent">E-Commerce App</h4>
-            <h2 class="my-3">₹14,999</h2>
-            <ul class="text-muted mb-4 ps-3">
-              <li>Full Web App</li>
-              <li>Payment Integration</li>
-              <li>Admin Dashboard</li>
-              <li>6 Months Support</li>
-            </ul>
-            <button class="btn btn-accent w-100" onclick="alert('Please login to purchase services.')">Purchase Now</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Contact & Footer -->
-  <footer id="contact" class="pt-5 pb-3 bg-dark border-top border-secondary">
+  <!-- Quick Stats Counter Section -->
+  <section class="py-3" style="background: var(--bg-secondary); border-top:1px solid var(--border-color); border-bottom:1px solid var(--border-color);">
     <div class="container">
-      <div class="row mb-4">
-        <div class="col-md-6 mb-3">
-          <h5 class="text-light"><i class="fas fa-code text-accent me-2"></i> Nexus Digital</h5>
-          <p class="text-muted small mt-2">Delivering excellence in software development and digital solutions across India.</p>
-          <p class="text-muted small"><i class="fas fa-envelope me-2"></i> contact@nexusdigital.in</p>
-          <p class="text-muted small"><i class="fas fa-phone me-2"></i> +91-9876543210</p>
+      <div class="row text-center text-light g-2">
+        <div class="col-md-3 col-6">
+          <h3 class="fw-bold text-success mb-0 fs-4">₹5,00,000+</h3>
+          <small class="text-muted text-uppercase fs-7">Total Cash Prizes Paid</small>
         </div>
-        <div class="col-md-3">
-          <h6 class="text-light mb-3">Legal (Required for Razorpay)</h6>
-          <ul class="list-unstyled text-small text-muted">
-            <li><a href="#" class="text-muted text-decoration-none">Terms & Conditions</a></li>
-            <li><a href="#" class="text-muted text-decoration-none">Privacy Policy</a></li>
-            <li><a href="#" class="text-muted text-decoration-none">Cancellation & Refund Policy</a></li>
-            <li><a href="#" class="text-muted text-decoration-none">Shipping & Delivery Policy</a></li>
-          </ul>
+        <div class="col-md-3 col-6">
+          <h3 class="fw-bold text-warning mb-0 fs-4">150+</h3>
+          <small class="text-muted text-uppercase fs-7">Tournaments Organized</small>
+        </div>
+        <div class="col-md-3 col-6">
+          <h3 class="fw-bold text-info mb-0 fs-4">25,000+</h3>
+          <small class="text-muted text-uppercase fs-7">Registered Gamers</small>
+        </div>
+        <div class="col-md-3 col-6">
+          <h3 class="fw-bold text-danger mb-0 fs-4">100%</h3>
+          <small class="text-muted text-uppercase fs-7">Automated & Secure</small>
         </div>
       </div>
-      <div class="text-center text-muted small pt-3 border-top border-secondary">
-        &copy; 2026 Nexus Digital Solutions. All rights reserved.
+    </div>
+  </section>
+
+  <!-- Featured Tournaments Section -->
+  <section class="py-4">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-end mb-3">
+        <div>
+          <span class="text-success text-uppercase fw-bold fs-7">Hot Contests</span>
+          <h3 class="text-light mb-0">Featured Tournaments</h3>
+        </div>
+        <a href="/tournaments.html" class="btn-outline-neon btn-sm">View All <i class="fas fa-arrow-right ms-1"></i></a>
       </div>
+      <div class="row" id="tournaments-container">
+        <!-- Rendered by tournaments.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Popular Games Section -->
+  <section class="py-4" style="background: var(--bg-secondary);">
+    <div class="container">
+      <div class="text-center mb-4">
+        <span class="text-success text-uppercase fw-bold fs-7">Supported Titles</span>
+        <h3 class="text-light">Popular Tournament Games</h3>
+      </div>
+      <div class="row g-3 text-center">
+        <div class="col-lg-3 col-md-4 col-6">
+          <div class="card-glass py-3">
+            <i class="fas fa-crosshairs fa-2x text-success mb-2"></i>
+            <h5 class="text-light mb-0">BGMI</h5>
+            <small class="text-muted">Squad Battle Royale</small>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-4 col-6">
+          <div class="card-glass py-3">
+            <i class="fas fa-fire fa-2x text-danger mb-2"></i>
+            <h5 class="text-light mb-0">Free Fire</h5>
+            <small class="text-muted">Survival Battleground</small>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-4 col-6">
+          <div class="card-glass py-3">
+            <i class="fas fa-bullseye fa-2x text-info mb-2"></i>
+            <h5 class="text-light mb-0">Valorant</h5>
+            <small class="text-muted">5v5 Tactical Shooter</small>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-4 col-6">
+          <div class="card-glass py-3">
+            <i class="fas fa-gamepad fa-2x text-warning mb-2"></i>
+            <h5 class="text-light mb-0">FIFA / EA FC</h5>
+            <small class="text-muted">1v1 Esports Football</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container text-center">
+      <div class="d-flex justify-content-center gap-3 mb-2 flex-wrap text-uppercase fs-7 fw-bold">
+        <a href="/terms-and-conditions.html" class="text-muted text-decoration-none">Terms & Conditions</a>
+        <a href="/privacy-policy.html" class="text-muted text-decoration-none">Privacy Policy</a>
+        <a href="/refund-policy.html" class="text-muted text-decoration-none">Refund Policy</a>
+        <a href="/fair-play.html" class="text-muted text-decoration-none">Fair Play</a>
+        <a href="/contact.html" class="text-muted text-decoration-none">Contact Us</a>
+      </div>
+      <p class="mb-1">&copy; 2026 Nexus Esports Platform. All rights reserved.</p>
+      <small class="text-muted">Built for competitive esports gamers across India.</small>
     </div>
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Bootstrap JS & Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/tournaments.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      loadTournamentsList(true);
+    });
+  </script>
 </body>
 </html>
