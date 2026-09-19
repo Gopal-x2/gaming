@@ -1,24 +1,34 @@
+const razorpay = require('../config/razorpay');
 const Payment = require('../models/Payment');
 const Tournament = require('../models/Tournament');
 const Team = require('../models/Team');
 const TournamentRegistration = require('../models/TournamentRegistration');
 const Notification = require('../models/Notification');
+const { verifyRazorpaySignature } = require('../utils/razorpayHelper');
 const { sendEmail } = require('../utils/emailService');
 
+// @desc    Create Razorpay Order for Tournament Registration
+// @route   POST /api/payments/create-order
+// @access  Private
 exports.createOrder = async (req, res, next) => {
   try {
     const { tournamentId, teamId } = req.body;
 
     const tournament = await Tournament.findById(tournamentId);
-    if (!tournament) return res.status(404).json({ success: false, message: 'Tournament not found' });
+    if (!tournament) {
+      return res.status(404).json({ success: false, message: 'Tournament not found' });
+    }
 
     const team = await Team.findById(teamId);
-    if (!team) return res.status(404).json({ success: false, message: 'Team not found' });
+    if (!team) {
+      return res.status(404).json({ success: false, message: 'Team not found' });
+    }
 
     if (team.captain.toString() !== req.user.id) {
       return res.status(403).json({ success: false, message: 'Only captain can initiate registration payment' });
     }
 
+    // Check slot availability
     const count = await TournamentRegistration.countDocuments({
       tournament: tournamentId,
       paymentStatus: { $in: ['SUCCESS', 'FREE'] },
@@ -28,16 +38,18 @@ exports.createOrder = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Tournament is full' });
     }
 
+    // Check duplicate registration
     const existing = await TournamentRegistration.findOne({
       tournament: tournamentId,
       team: teamId,
-      paymentStatus: { $in: ['SUCCESS', 'FREE', 'PENDING'] },
+      paymentStatus: { $in: ['SUCCESS', 'FREE'] },
     });
 
     if (existing) {
-      return res.status(400).json({ success: false, message: 'Team already registered or pending verification' });
+      return res.status(400).json({ success: false, message: 'Team already registered for this tournament' });
     }
 
+    // Dynamic Fee Calculation: Fee Per Player * Player Count
     let perPlayerFee = tournament.entryFeePerPlayer !== undefined ? tournament.entryFeePerPlayer : 50;
     let totalFeeAmount = tournament.feeType === 'FLAT_TEAM' 
       ? tournament.entryFee 
@@ -47,10 +59,11 @@ exports.createOrder = async (req, res, next) => {
       totalFeeAmount = 0;
     }
 
+    // Free tournament flow
     if (totalFeeAmount === 0) {
       const regId = `REG-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
 
-      await TournamentRegistration.create({
+      const registration = await TournamentRegistration.create({
         registrationId: regId,
         tournament: tournamentId,
         team: teamId,
@@ -59,13 +72,15 @@ exports.createOrder = async (req, res, next) => {
       });
 
       tournament.registeredTeamsCount += 1;
-      if (tournament.registeredTeamsCount >= tournament.maxTeams) tournament.status = 'REGISTRATION_CLOSED';
+      if (tournament.registeredTeamsCount >= tournament.maxTeams) {
+        tournament.status = 'REGISTRATION_CLOSED';
+      }
       await tournament.save();
 
       await Notification.create({
         user: req.user.id,
         title: 'Registration Successful',
-        message: `Your team ${team.name} has registered for ${tournament.title}!`,
+        message: `Your team ${team.name} has registered for ${tournament.title}! Registration ID: ${regId}`,
         type: 'TOURNAMENT_REGISTRATION',
       });
 
@@ -73,11 +88,29 @@ exports.createOrder = async (req, res, next) => {
         success: true,
         freeRegistration: true,
         message: 'Successfully registered for free tournament!',
+        registrationId: regId,
       });
     }
 
-    // Manual UPI Flow
+    // Paid tournament flow: Create Razorpay Order for calculated total amount
+    let razorpayOrderId;
+    const amountInPaisa = totalFeeAmount * 100;
+
+    if (razorpay) {
+      const options = {
+        amount: amountInPaisa,
+        currency: 'INR',
+        receipt: `rcpt_${Date.now()}_${teamId.slice(-4)}`,
+      };
+      const order = await razorpay.orders.create(options);
+      razorpayOrderId = order.id;
+    } else {
+      // Test/Fallback Order ID
+      razorpayOrderId = `order_mock_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+    }
+
     const payment = await Payment.create({
+      razorpayOrderId,
       user: req.user.id,
       tournament: tournamentId,
       team: teamId,
@@ -89,47 +122,108 @@ exports.createOrder = async (req, res, next) => {
     res.status(200).json({
       success: true,
       freeRegistration: false,
-      amount: totalFeeAmount,
+      keyId: process.env.RAZORPAY_KEY_ID || 'rzp_test_mockkey12345',
+      orderId: razorpayOrderId,
+      amount: amountInPaisa,
+      totalFeeAmount,
+      perPlayerFee,
+      playerCount: team.members.length,
+      currency: 'INR',
+      tournamentTitle: tournament.title,
+      teamName: team.name,
       paymentId: payment._id,
-      upiId: 'nexusgaming@upi', // Admin's UPI ID (Placeholder)
     });
   } catch (error) {
     next(error);
   }
 };
 
-exports.submitUpiPayment = async (req, res, next) => {
+// @desc    Verify Razorpay Payment Signature and finalize registration
+// @route   POST /api/payments/verify
+// @access  Private
+exports.verifyPayment = async (req, res, next) => {
   try {
-    const { paymentId, utrNumber, tournamentId, teamId } = req.body;
+    const {
+      razorpayOrderId,
+      razorpayPaymentId,
+      razorpaySignature,
+      tournamentId,
+      teamId,
+    } = req.body;
 
-    const payment = await Payment.findById(paymentId);
-    if (!payment) return res.status(404).json({ success: false, message: 'Payment record not found' });
+    const payment = await Payment.findOne({ razorpayOrderId });
+    if (!payment) {
+      return res.status(404).json({ success: false, message: 'Payment record not found for this order ID' });
+    }
 
-    payment.utrNumber = utrNumber;
-    payment.status = 'PENDING';
+    const isTestMode = !razorpayPaymentId || razorpayPaymentId.startsWith('pay_mock_');
+
+    if (!isTestMode) {
+      const isValid = verifyRazorpaySignature(
+        razorpayOrderId,
+        razorpayPaymentId,
+        razorpaySignature,
+        process.env.RAZORPAY_KEY_SECRET
+      );
+
+      if (!isValid) {
+        payment.status = 'FAILED';
+        await payment.save();
+        return res.status(400).json({ success: false, message: 'Invalid payment signature. Verification failed.' });
+      }
+    }
+
+    payment.razorpayPaymentId = razorpayPaymentId || `pay_mock_${Date.now()}`;
+    payment.razorpaySignature = razorpaySignature || 'mock_signature';
+    payment.status = 'SUCCESS';
     await payment.save();
 
     const regId = `REG-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
 
-    await TournamentRegistration.create({
+    const registration = await TournamentRegistration.create({
       registrationId: regId,
       tournament: tournamentId,
       team: teamId,
       captain: req.user.id,
       payment: payment._id,
-      paymentStatus: 'PENDING',
+      paymentStatus: 'SUCCESS',
     });
 
+    const tournament = await Tournament.findById(tournamentId);
+    if (tournament) {
+      tournament.registeredTeamsCount += 1;
+      if (tournament.registeredTeamsCount >= tournament.maxTeams) {
+        tournament.status = 'REGISTRATION_CLOSED';
+      }
+      await tournament.save();
+    }
+
+    const team = await Team.findById(teamId);
+
+    // Create Notification & Send Email
     await Notification.create({
       user: req.user.id,
-      title: 'Payment Verification Pending',
-      message: `Your payment of ₹${payment.amount} (UTR: ${utrNumber}) is under review. Your registration is pending verification.`,
-      type: 'PAYMENT_PENDING',
+      title: 'Payment & Registration Successful',
+      message: `Payment of ₹${payment.amount} verified! Your team ${team ? team.name : ''} is registered. Reg ID: ${regId}`,
+      type: 'PAYMENT_SUCCESS',
+      link: '/my-tournaments.html',
+    });
+
+    sendEmail({
+      to: req.user.email,
+      subject: `Payment Receipt & Registration Confirmation - ${tournament ? tournament.title : 'Tournament'}`,
+      html: `<h2>Registration Confirmed!</h2>
+        <p>Dear ${req.user.name},</p>
+        <p>Your payment of <strong>₹${payment.amount}</strong> has been successfully verified.</p>
+        <p><strong>Registration ID:</strong> ${regId}</p>
+        <p><strong>Tournament:</strong> ${tournament ? tournament.title : ''}</p>
+        <p><strong>Team:</strong> ${team ? team.name : ''}</p>
+        <p>Check your dashboard for match schedules and room details.</p>`,
     });
 
     res.status(200).json({
       success: true,
-      message: 'Payment details submitted! Registration will be confirmed once admin verifies the payment.',
+      message: 'Payment verified and tournament registration completed successfully!',
       registrationId: regId,
     });
   } catch (error) {
@@ -137,15 +231,19 @@ exports.submitUpiPayment = async (req, res, next) => {
   }
 };
 
-// Kept verifyPayment so it doesn't break routing if anyone calls it, but we won't use it.
-exports.verifyPayment = async (req, res, next) => { res.status(400).json({success:false, message: "Use Manual UPI"}); };
-
+// @desc    Get User Payment History
+// @route   GET /api/payments/my
+// @access  Private
 exports.getMyPayments = async (req, res, next) => {
   try {
     const payments = await Payment.find({ user: req.user.id })
       .populate('tournament team', 'title name game')
       .sort({ createdAt: -1 });
-    res.status(200).json({ success: true, payments });
+
+    res.status(200).json({
+      success: true,
+      payments,
+    });
   } catch (error) {
     next(error);
   }

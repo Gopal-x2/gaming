@@ -2,20 +2,17 @@ const express = require('express');
 const router = express.Router();
 const {
   getDashboardStats,
-  getAllUsers,
-  updateUserStatus,
-  deleteUser,
-  getAllTournaments,
   createTournament,
   updateTournament,
   deleteTournament,
   permanentlyDeleteTournament,
-  getAllPayments,
-  verifyManualPayment,
   createMatch,
   updateMatch,
   updateResults,
-  getAllTeams
+  getAllUsers,
+  updateUserStatus,
+  getAllPayments,
+  getAllTeams,
 } = require('../controllers/adminController');
 const { protect } = require('../middleware/authMiddleware');
 const { adminOnly } = require('../middleware/adminMiddleware');
@@ -38,7 +35,6 @@ router.get('/users', getAllUsers);
 router.put('/users/:id/status', updateUserStatus);
 
 router.get('/payments', getAllPayments);
-router.put('/payments/:id/verify', verifyManualPayment);
 router.get('/teams', getAllTeams);
 
 module.exports = router;
