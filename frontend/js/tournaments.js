@@ -271,18 +271,22 @@ async function updateModalFeePreview() {
 
       if (document.getElementById('modal-player-count')) {
         document.getElementById('modal-player-count').textContent = `${count} Players`;
-      }
-      if (document.getElementById('modal-rate-per-player')) {
         document.getElementById('modal-rate-per-player').textContent = total === 0 ? 'FREE' : `₹${rate} / Player`;
-      }
-      if (document.getElementById('modal-total-calculated-fee')) {
-        document.getElementById('modal-total-calculated-fee').textContent = total === 0 
-          ? 'FREE ENTRY' 
-          : `${count} × ₹${rate} = ₹${total}`;
+        document.getElementById('modal-total-calculated-fee').textContent = total === 0 ? 'FREE ENTRY' : `${count} × ₹${rate} = ₹${total}`;
+        document.getElementById('modal-total-calculated-fee').classList.add('text-success');
+        document.getElementById('modal-total-calculated-fee').classList.remove('text-danger');
+        document.getElementById('modal-total-calculated-fee').style.fontSize = '';
       }
     }
   } catch (error) {
-    showToast(error.message, 'error');
+    if (document.getElementById('modal-total-calculated-fee')) {
+      document.getElementById('modal-player-count').textContent = `--`;
+      document.getElementById('modal-rate-per-player').textContent = `--`;
+      document.getElementById('modal-total-calculated-fee').textContent = error.message;
+      document.getElementById('modal-total-calculated-fee').classList.remove('text-success');
+      document.getElementById('modal-total-calculated-fee').classList.add('text-danger');
+      document.getElementById('modal-total-calculated-fee').style.fontSize = '12px';
+    }
   }
 }
 

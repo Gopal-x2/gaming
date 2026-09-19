@@ -162,7 +162,7 @@ exports.checkEligibility = async (req, res, next) => {
     }
 
     // Calculate dynamic entry fee
-    let perPlayerFee = tournament.entryFeePerPlayer || 50;
+    let perPlayerFee = tournament.entryFeePerPlayer !== undefined ? tournament.entryFeePerPlayer : 50;
     let calculatedTotal = tournament.feeType === 'FLAT_TEAM' 
       ? tournament.entryFee 
       : (team.members.length * perPlayerFee);
